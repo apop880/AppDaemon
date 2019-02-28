@@ -3,7 +3,9 @@ My AppDaemon Apps
 
 This is a repository of my AppDaemon apps for Home Assistant. I'll add apps periodically that I think may be useful to the broader community.
 
-## STButton
+Jump to: [STButton](#stbutton)
+
+## <a name="stbutton"></a>STButton
 ### Version 1 Published 2/23/19
 This application is a handler for SmartThings Button events. You must have the SmartThings Integration configured in Home Assistant.
 
