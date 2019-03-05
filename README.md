@@ -62,20 +62,20 @@ You will need to include two other pieces. In automations.yaml, add the followin
 This creates a webhook that TileBoard can call to trigger the AppDaemon script. Now, in the events portion of your TileBoard config.js, add the following:
 
 ```javascript
-			{
-				command: 'ss_update',
-				action: function(e) {
-					CONFIG.screensaver.slides.length = 0;
-					for (i = 0; i < e.slides.length; i++) {
-						file = "images/screensaver/" + e.slides[i];
-						CONFIG.screensaver.slides.push({
-							bg: file
-					});
-					}
-					var update_interval = (CONFIG.screensaver.slides.length * CONFIG.screensaver.slidesTimeout) - 60;
-					setTimeout(ss_update_func, update_interval * 1000);
-				}
-			}
+{
+	command: 'ss_update',
+	action: function(e) {
+		CONFIG.screensaver.slides.length = 0;
+		for (i = 0; i < e.slides.length; i++) {
+			file = "images/screensaver/" + e.slides[i];
+			CONFIG.screensaver.slides.push({
+				bg: file
+			});
+		}
+		var update_interval = (CONFIG.screensaver.slides.length * CONFIG.screensaver.slidesTimeout) - 60;
+		setTimeout(ss_update_func, update_interval * 1000);
+	}
+}
 ```
 
 Then, at the very bottom of config.js, add the following:
