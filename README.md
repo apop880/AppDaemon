@@ -59,7 +59,7 @@ You will need to include two other pieces. In automations.yaml, add the followin
     event: tb_update
 ```
 
-This creates a webhook that TileBoard can call to trigger the AppDaemon script. Now, in the events portion of your TileBoard config.js, add the following:
+This creates a webhook that TileBoard can call to trigger the AppDaemon script. Eventually, I plan to phase this piece out and call the AppDaemon API directly, but that API doesn't currently support CORS so the YAML automation webhook must act as the middleman. Now, in the events portion of your TileBoard config.js, add the following:
 
 ```javascript
 {
