@@ -13,8 +13,8 @@ import datetime
 # tileboard:
 #   module: tileboard
 #   class: TileBoard
-#	slidesTimeout: 30
-#	dailyRefresh: true (optional)
+#   slidesTimeout: 30
+#   dailyRefresh: true (optional)
 
 class TileBoard(hass.Hass):
 
