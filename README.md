@@ -39,13 +39,17 @@ bar_button:
   to meet the things I needed it for and replicate my previous SmartThings setup, but there are a number of additional things that could be added.
   
   ## <a name="tileboard"></a>TileBoard
-### Version 1 Published 3/4/19
-This is a helper script for the excellent TileBoard webapp. It makes it easy to have a photo screensaver that is constantly updated and randomized. The setup in apps.yaml is self explanatory:
+### Version 2 Published 3/13/19 (See below for breaking changes)
+This is a set of helper functions for the excellent TileBoard webapp. Primarily, this app makes it easy to have a photo screensaver that is constantly updated and randomized. The setup in apps.yaml is fairly self explanatory:
 
 ```yaml
 tileboard:
   module: tileboard
   class: TileBoard
+  #Breaking change in v2 - specify the length each slide is displayed for, in seconds, as defined in config.js
+  slidesTimeout: 30
+  #optional: schedule a daily refresh of TileBoard at 3am
+  dailyRefresh: true
 ```
 
 You will need to include two other pieces. In automations.yaml, add the following:
@@ -72,8 +76,6 @@ This creates a webhook that TileBoard can call to trigger the AppDaemon script. 
 				bg: file
 			});
 		}
-		var update_interval = (CONFIG.screensaver.slides.length * CONFIG.screensaver.slidesTimeout) - 60;
-		setTimeout(ss_update_func, update_interval * 1000);
 	}
 }
 ```
@@ -86,12 +88,19 @@ var webhook_endpoint = CONFIG.serverUrl + "/api/webhook/tb_update";
 var xhttp = new XMLHttpRequest;
 xhttp.open("POST", webhook_endpoint, true);
 xhttp.send();
+```
 
-function ss_update_func() {
-	var xhttp = new XMLHttpRequest;
-	xhttp.open("POST", webhook_endpoint, true);
-	xhttp.send();
+The webhook will be called when TileBoard first loads or is refreshed. That will execute the AppDaemon script, which gets a list of all of the photos for the screensaver. **The files must be in an images/screensaver folder under tileboard.** The script is currently only configured to look in this folder, which you will have to create initially. It will look for any files with a .jpg or .jpeg extension, shuffle that list of files, and send it back to TileBoard. New in version 2, this is the only time TileBoard initiates the call to AppDaemon. From then on, AppDaemon will automatically attempt to send the update list of slides to TileBoard each time the list of photos has been gone through, so that any new photos in the folder can be picked up, and the photos can be randomized again. **To accommodate this, take note of the breaking change to apps.yaml listed above.** The ```slidesTimeout``` line must be configured and should match what is in TileBoard's config.js.
+
+Also new in version 2 is an additional helper function to automatically refresh TileBoard at 3am daily. Running TileBoard on a Kindle Fire in Fully Kiosk, I notice that Fully tends to crash every few days. My hope is that by scheduling a refresh each night, it will clear out any leftover connections and data, and the fresh start each day will reduce the number of crashes. This functionality can be turned on optionally by including the ```dailyRefresh``` line in the apps.yaml configuration. You will also need to add the following code to the events portion of config.js:
+
+```javascript
+{
+	command: 'refresh',
+	action: function(e) {
+		window.location.reload();
+	}
 }
 ```
 
-The webhook will be called when TileBoard first loads. That will execute the AppDaemon script, which gets a list of all of the photos for the screensaver. **The files must be in an images/screensaver folder under tileboard.** The script is currently only configured to look in this folder, which you will have to create initially. It will look for any files with a .jpg or .jpeg extension, shuffle that list of files, and send it back to TileBoard. Then, TileBoard will call the webhook each time the list of photos has been gone through, so that any new photos in the folder can be picked up, and the photos can be randomized again.
+I may implement additional helper functions in the future and am open to suggestions.
