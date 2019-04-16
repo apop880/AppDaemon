@@ -4,7 +4,7 @@ import appdaemon.plugins.hass.hassapi as hass
 # STButton
 #
 # Args:
-#  -button_name (ST) OR button_ieee (ZHA)
+#  -button_name (ST) OR device_ieee (ZHA)
 #  -tap_action: toggle, brightness, color
 #  -tap_device:
 #  -tap_colors (optional)
