@@ -4,7 +4,7 @@ import appdaemon.plugins.hass.hassapi as hass
 # STButton
 #
 # Args:
-#  -button_name
+#  -button_name (ST) OR button_ieee (ZHA)
 #  -tap_action: toggle, brightness, color
 #  -tap_device:
 #  -tap_colors (optional)
@@ -28,11 +28,22 @@ class STButton(hass.Hass):
 			self.hold_colors = self.split_device_list(self.args["hold_colors"])
 		if "double_colors" in self.args:
 			self.double_colors = self.split_device_list(self.args["double_colors"])
-		#listen for button events
-		self.listen_event(self.button_event, "smartthings.button", value="pushed", name=self.args["button_name"], action = "tap_action", device = "tap_device")
-		self.listen_event(self.button_event, "smartthings.button", value="held", name=self.args["button_name"], action = "hold_action", device = "hold_device")
-		self.listen_event(self.button_event, "smartthings.button", value="double", name=self.args["button_name"], action = "double_action", device = "double_device")
-		
+		#Error check: Can't have button_name and device_ieee defined
+		if "button_name" in self.args and "device_ieee" in self.args:
+			self.log("Error - cannot have both button_name and device_ieee")
+		#ST Integration: listen for button events
+		elif "button_name" in self.args:
+			self.listen_event(self.button_event, "smartthings.button", value="pushed", name=self.args["button_name"], action = "tap_action", device = "tap_device")
+			self.listen_event(self.button_event, "smartthings.button", value="held", name=self.args["button_name"], action = "hold_action", device = "hold_device")
+			self.listen_event(self.button_event, "smartthings.button", value="double", name=self.args["button_name"], action = "double_action", device = "double_device")
+		#ZHA Integration: listen for zha event that matches
+		elif "device_ieee" in self.args:
+			self.listen_event(self.button_event, "zha_event", command="button_single", device_ieee=self.args["device_ieee"], action = "tap_action", device = "tap_device")
+			self.listen_event(self.button_event, "zha_event", command="button_hold", device_ieee=self.args["device_ieee"], action = "hold_action", device = "hold_device")
+			self.listen_event(self.button_event, "zha_event", command="button_double", device_ieee=self.args["device_ieee"], action = "double_action", device = "double_device")
+		else:
+			self.log("Error - must define either button_name or device_ieee")
+
 	def button_event(self, event_name, data, kwargs):
 		if self.args[kwargs["action"]] == "toggle":
 			light = self.get_state(self.args[kwargs["device"]])
