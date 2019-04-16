@@ -15,6 +15,11 @@ import appdaemon.plugins.hass.hassapi as hass
 #  -double_device:
 #  -double_colors (optional)
 
+# Roadmap:
+## Custom Brightness
+## More error handling
+## Turn on/off devices other than lights
+
 class STButton(hass.Hass):
 
 	def initialize(self):
@@ -54,13 +59,13 @@ class STButton(hass.Hass):
 				self.double_index = 0
 			else:
 				self.turn_off(self.args[kwargs["device"]])
-		if self.args[kwargs["action"]] == "brightness":
+		elif self.args[kwargs["action"]] == "brightness":
 			light = self.get_state(self.args[kwargs["device"]], attribute="brightness")
 			if light != None and light < 128:
 				self.turn_on(self.args[kwargs["device"]], brightness_pct=60)
 			elif light != None and light >= 128:
 				self.turn_on(self.args[kwargs["device"]], brightness_pct=15)
-		if self.args[kwargs["action"]] == "color":
+		elif self.args[kwargs["action"]] == "color":
 			if kwargs["action"] == "tap_action":
 				self.tap_index += 1
 				if self.tap_colors[self.tap_index % len(self.tap_colors)] == "white":
