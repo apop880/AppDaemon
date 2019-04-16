@@ -72,13 +72,13 @@ class STButton(hass.Hass):
 					self.turn_on(self.args[kwargs["device"]], kelvin=2700)
 				else:
 					self.turn_on(self.args[kwargs["device"]], color_name=self.tap_colors[self.tap_index % len(self.tap_colors)])
-			if kwargs["action"] == "hold_action":
+			elif kwargs["action"] == "hold_action":
 				self.hold_index += 1
 				if self.hold_colors[self.hold_index % len(self.hold_colors)] == "white":
 					self.turn_on(self.args[kwargs["device"]], kelvin=2700)
 				else:
 					self.turn_on(self.args[kwargs["device"]], color_name=self.hold_colors[self.hold_index % len(self.hold_colors)])
-			if kwargs["action"] == "double_action":
+			elif kwargs["action"] == "double_action":
 				self.double_index += 1
 				if self.double_colors[self.double_index % len(self.double_colors)] == "white":
 					self.turn_on(self.args[kwargs["device"]], kelvin=2700)
